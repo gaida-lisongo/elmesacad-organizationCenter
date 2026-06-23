@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+
+# Build
+dist
+build
+coverage
+
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Docker
+docker-compose.yml
+docker-stack.yml
+
+# Tests
+test
+tests
+__tests__
+
+# Documentation
+README.md
+docs
+
+# Temporary files
+tmp
+temp
+.cache
