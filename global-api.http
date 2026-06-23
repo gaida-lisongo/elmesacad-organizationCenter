@@ -1,0 +1,137 @@
+### Variables de configuration de base
+@baseUrl = http://localhost:4000/api/v1
+
+##################################################################
+### 1. CRÉATION DU CENTRE DE L'INBTP (POST)
+##################################################################
+# @name createInbtp
+POST {{baseUrl}}/centres
+Content-Type: application/json
+
+{
+  "nom": "Institut National du Bâtiment et des Travaux Publics",
+  "sigle": "INBTP",
+  "logo": "https://images.unsplash.com/photo-1631556759511-6ce895fbf0ad?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "directeur": {
+    "matricule": "CR-001",
+    "nomComplet": "Jean-Pierre Mbuyi Nkashama",
+    "grade": "Professeur Ordinaire • Directeur Général",
+    "photo": "/images/about/dg.jpg",
+    "vision": "Devenir un pôle d'excellence scientifique de référence en Afrique centrale, capable de produire des connaissances innovantes...",
+    "missions": [
+      "Promouvoir la recherche scientifique et l'innovation dans les différentes disciplines académiques.",
+      "Encadrer et accompagner les chercheurs, enseignants et étudiants dans leurs travaux."
+    ]
+  }
+}
+
+### ATTENTION : Copie l'id reçu dans la réponse de la requête ci-dessus 
+### et colle-le à la place de la valeur ci-dessous pour l'utiliser pour la suite.
+@inbtpId = 6a37797c9c006434641c6115
+
+
+##################################################################
+### 2. DÉFINIR L'HISTORIQUE DE BASE (PUT)
+##################################################################
+PUT {{baseUrl}}/centres/{{inbtpId}}/historique
+Content-Type: application/json
+
+{
+  "titre": "Histoire du Centre de Recherche",
+  "sousTitre": "Plus de 50 années d'excellence scientifique",
+  "description": "Depuis sa création, le Centre de Recherche n'a cessé de contribuer au développement de la science, de la technologie et de l'innovation en République Démocratique du Congo.",
+  "image": "https://images.unsplash.com/photo-1631556759511-6ce895fbf0ad?q=80&w=1174&auto=format&fit=crop"
+}
+
+##################################################################
+### 2.5 MIS À JOUR DU DIRECTEUR (PUT)
+##################################################################
+PUT {{baseUrl}}/centres/{{inbtpId}}/directeur
+Content-Type: application/json
+
+{
+  "matricule": "CR-001",
+  "nomComplet": "Jean-Pierre Mbuyi Nkashama",
+  "grade": "Professeur Ordinaire • Directeur Général",
+  "photo": "/images/about/dg.jpg",
+  "vision": "Devenir un pôle d'excellence scientifique de référence en Afrique centrale, capable de produire des connaissances innovantes...",
+  "missions": [
+    "Promouvoir la recherche scientifique et l'innovation dans les différentes disciplines académiques.",
+    "Encadrer et accompagner les chercheurs, enseignants et étudiants dans leurs travaux de recherche.",
+    "Développer des partenariats nationaux et internationaux favorisant le transfert de connaissances."
+  ]
+}
+
+##################################################################
+### 3. AJOUTER DES ÉVÉNEMENTS À L'HISTORIQUE (POST)
+##################################################################
+POST {{baseUrl}}/centres/{{inbtpId}}/historique/events
+Content-Type: application/json
+
+{
+  "events": [
+    {
+      "annee": "1974",
+      "titre": "Création du Centre",
+      "description": "Création officielle du Centre de Recherche avec pour mission de promouvoir la recherche scientifique et l'innovation."
+    },
+    {
+      "annee": "1986",
+      "titre": "Premiers Laboratoires",
+      "description": "Ouverture des premiers laboratoires spécialisés et recrutement des premières équipes de chercheurs."
+    },
+    {
+      "annee": "2023",
+      "titre": "Transformation Numérique",
+      "description": "Lancement de la stratégie de digitalisation et d'ouverture aux collaborations internationales."
+    }
+  ]
+}
+
+
+##################################################################
+### 4. AJOUTER LES DIRECTIONS (POST)
+##################################################################
+POST {{baseUrl}}/centres/{{inbtpId}}/directions
+Content-Type: application/json
+
+{
+  "directions": [
+    {
+      "title": "Direction Administrative",
+      "sigle": "DA",
+      "description": "La Direction Administrative assure le bon fonctionnement institutionnel du centre de recherche. Elle pilote les ressources humaines, la gestion des utilisateurs, le suivi administratif des chercheurs.",
+      "responsable": {
+        "matricule": "CR-012",
+        "nomComplet": "Pr. Jean-Claude Mbuyi",
+        "grade": "Professeur Ordinaire",
+        "position": "Directeur Administratif",
+        "photo": "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+      }
+    },
+    {
+      "title": "Direction Scientifique",
+      "sigle": "DS",
+      "description": "La Direction Scientifique constitue le cœur métier du centre de recherche. Elle définit les axes stratégiques de recherche, supervise les départements scientifiques.",
+      "responsable": {
+        "matricule": "CR-001",
+        "nomComplet": "Pr. Patrick Tshibangu",
+        "grade": "Professeur Ordinaire",
+        "position": "Directeur Scientifique",
+        "photo": "https://images.unsplash.com/photo-1537368910025-700350fe46c7"
+      }
+    }
+  ]
+}
+
+
+##################################################################
+### 5. LISTER TOUS LES CENTRES (GET)
+##################################################################
+GET {{baseUrl}}/centres
+
+
+##################################################################
+### 6. VOIR LE DÉTAIL COMPLET DE L'INBTP (GET)
+##################################################################
+GET {{baseUrl}}/centres/{{inbtpId}}

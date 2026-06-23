@@ -1,0 +1,62 @@
+@baseUrl = http://127.0.0.1:4000/api/v1
+@matriculeTest = CR-ED3DF9
+
+##################################################################
+### ÉTAPE 1 : DEMANDE DE CONNEXION (Génère l'OTP & Déclenche le Mail)
+##################################################################
+# @name requestOtp
+POST {{baseUrl}}/auth/request-otp
+Content-Type: application/json
+
+{
+  "matricule": "{{matriculeTest}}"
+}
+
+###
+# À ce stade :
+# 1. Ton organization-service a stocké le code dans Upstash Redis pour 5 min.
+# 2. Un message a été poussé dans RabbitMQ.
+# 3. Ton notification-service a consommé le message et envoyé le joli mail HTML.
+# -> Ouvre ta boîte Mailtrap / Brevo pour copier le code reçu à 6 chiffres.
+
+
+##################################################################
+### ÉTAPE 2 : VERIFICATION DE L'OTP (Valide le code & Crée la Session)
+##################################################################
+# @name verifyOtp
+POST {{baseUrl}}/auth/verify-otp
+Content-Type: application/json
+
+{
+  "matricule": "{{matriculeTest}}",
+  "otpSubmitted": "338230", 
+  "localisation": {
+    "pays": "République Démocratique du Congo",
+    "ville": "Kinshasa"
+  },
+  "device": {
+    "browser": "Firefox Developer Edition",
+    "os": "Windows 11",
+    "isMobile": false
+  }
+}
+
+### Remplace la valeur "123456" par le vrai code reçu par e-mail.
+### Copie le token reçu dans la réponse du succès ci-dessus :
+@authToken = d284bf9ba58429b92f4dd4bd2281e8b7bfafb9462efc8d53acc83c990f90865e
+
+
+##################################################################
+### ÉTAPE 3 : VÉRIFIER LE STATUT DE LA SESSION ACTIVED
+##################################################################
+GET {{baseUrl}}/auth/status
+Authorization: Bearer {{authToken}}
+
+### Cette requête te renverra le statut "connected" ainsi que le temps restant calculé.
+
+
+##################################################################
+### ÉTAPE 4 : LOGOUT (Fermeture de session)
+##################################################################
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{authToken}}

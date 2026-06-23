@@ -1,0 +1,149 @@
+@baseUrl = http://127.0.0.1:4000/api/v1
+
+### 1. [CONTROL PLANE] Créer le Centre globale (Pas besoin de clé d'API)
+POST {{baseUrl}}/centres
+Content-Type: application/json
+
+{
+  "nom": "Institut National du Bâtiment et des Travaux Publics",
+  "sigle": "INBTP"
+}
+
+### VARIABLES À CONFIGURER APRÈS LA CRÉATION
+@apiKey = crt_0ad1e4901c68dc8cd1370ece
+@apiSecret = scr_1eca2097bd9d24ebefdabea9c82de19c3ec62d8870260dc0
+
+### 2. [DATA PLANE] Voir le détail du centre (Authentifié par API Key)
+GET {{baseUrl}}/centre
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+
+
+### 3. [DATA PLANE] Définir l'historique
+PUT {{baseUrl}}/centre/historique
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "titre": "Histoire de l'INBTP",
+  "sousTitre": "Excellence en Ingénierie Civil",
+  "description": "Fondé pour propulser les infrastructures du pays..."
+}
+
+
+### 4. [DATA PLANE] Mettre à jour le Directeur
+PUT {{baseUrl}}/centre/directeur
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "matricule": "CR-015",
+  "nomComplet": "Jean-Pierre Mbuyi Nkashama",
+  "grade": "Professeur Ordinaire",
+  "vision": "Devenir un pôle d'excellence..."
+}
+
+### 1. Créer un utilisateur au sein du tenant INBTP
+POST {{baseUrl}}/centre/users
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "nomComplet": "LISONGO BAÏTA Nathan",
+  "email": "nathan.lisongo@inbtp.ac.cd",
+  "fonction": "Chercheuse en Informatique",
+  "grade": "Ingénieur en Informatique Appliquée",
+  "nationalite": "Congolaise"
+}
+
+### (Copie l'id du user reçu dans la réponse de création ci-dessus)
+@userId = 6a37a6bdb2c953f44815b481
+
+
+### 2. Lire la liste des utilisateurs du tenant (Lit le schéma Autorisation)
+GET {{baseUrl}}/centre/users
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+
+
+### 3. Modifier le profil de l'utilisateur (Intéragit avec le schéma User)
+PUT {{baseUrl}}/centre/users/{{userId}}
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "grade": "Docteure en Génie Civil (Mise à jour)"
+}
+
+### Accorder le rôle d'admin et ajouter des permissions sécurisées
+PUT {{baseUrl}}/centre/users/{{userId}}/authorization
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "role": "admin",
+  "addPermissions": [
+    {
+      "designation": "manage_history",
+      "password": "SecretPasswordForHistory123!"
+    },
+    {
+      "designation": "publish_events",
+      "password": "SecretPasswordForEvents456!"
+    }
+  ]
+}
+
+### Retirer une permission spécifique tout en gardant les autres
+PUT {{baseUrl}}/centre/users/{{userId}}/authorization
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+{
+  "removePermissionsDesignations": ["manage_history"]
+}
+
+### 1. SE CONNECTER (Génère le Token et capture les métadonnées)
+# @name loginRequest
+POST http://127.0.0.1:4000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "a.kavira@inbtp.cd",
+  "matricule": "CR-E4A1B9", 
+  "localisation": {
+    "pays": "République Démocratique du Congo",
+    "ville": "Kinshasa"
+  },
+  "device": {
+    "browser": "Firefox 125",
+    "os": "MacOS",
+    "isMobile": false
+  }
+}
+
+### Extrait le token reçu pour le mettre ici :
+@authToken = 026bc0774d9ed2f7d26816df80b4869ca8a2b27c15aadebeb707005a96b885ad
+
+
+### 2. VÉRIFIER LE STATUT DE CONNEXION (Retourne le statut et le temps restant)
+GET http://127.0.0.1:4000/api/v1/centre
+Authorization: Bearer {{authToken}}
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
+Content-Type: application/json
+
+### 3. SE DÉCONNECTER
+POST http://127.0.0.1:4000/api/v1/auth/logout
+Authorization: Bearer {{authToken}}
+
+### 4. Supprimer l'utilisateur du tenant
+DELETE {{baseUrl}}/centre/users/{{userId}}
+x-api-key: {{apiKey}}
+x-api-secret: {{apiSecret}}
